@@ -15,7 +15,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
-        if (!class_exists('Propel')) {
+        if (!class_exists('Propel\Runtime\Propel')) {
             $this->markTestSkipped('Propel not installed');
         }
     }
@@ -35,14 +35,11 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $this->assertInternalType('int', $userId);
 
         $serialized = serialize($user);
-        UserPeer::clearInstancePool();
-        $this->assertCount(0, UserPeer::$instances);
 
         $unserialized = unserialize($serialized);
         $fetchedUser = UserQuery::create()->findOneById($userId);
 
         $this->assertInstanceOf('FOS\UserBundle\Propel\User', $unserialized);
-        $this->assertCount(1, UserPeer::$instances);
         $this->assertTrue($fetchedUser->equals($unserialized));
 
         $this->assertCount(1, $unserialized->getGroups());
